@@ -2,8 +2,10 @@ package com.diuVote.DiuVOte.service;
 
 import com.diuVote.DiuVOte.dto.request.CreateEventRequest;
 import com.diuVote.DiuVOte.dto.request.ModerateCandidateRequest;
+// import com.diuVote.DiuVOte.dto.response.CandidateDto;
 import com.diuVote.DiuVOte.dto.response.EventDetailsDto;
 import com.diuVote.DiuVOte.dto.response.EventSummaryDto;
+import com.diuVote.DiuVOte.dto.response.PublicEventSummaryDto;
 
 import java.util.List;
 
@@ -20,4 +22,8 @@ public interface EventCreatorEventService {
     EventDetailsDto endVoting(String creatorId, String eventId);
 
     EventDetailsDto releaseResults(String creatorId, String eventId);
+
+    List<PublicEventSummaryDto> listAllPublicEvents();
+
+    EventDetailsDto getPublicEventDetails(String eventId);
 }

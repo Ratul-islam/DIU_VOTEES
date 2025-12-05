@@ -5,6 +5,7 @@ import com.diuVote.DiuVOte.dto.request.ModerateCandidateRequest;
 import com.diuVote.DiuVOte.dto.response.CandidateDto;
 import com.diuVote.DiuVOte.dto.response.EventDetailsDto;
 import com.diuVote.DiuVOte.dto.response.EventSummaryDto;
+import com.diuVote.DiuVOte.dto.response.PublicEventSummaryDto;
 import com.diuVote.DiuVOte.entity.CANDIDATE;
 import com.diuVote.DiuVOte.entity.EVENT;
 import com.diuVote.DiuVOte.repository.CandidateRepository;
@@ -39,8 +40,6 @@ public class EventCreatorEventServiceImpl implements EventCreatorEventService {
         event.setVotingStart(Instant.ofEpochMilli(request.getVotingStartEpochMs()));
         event.setVotingEnd(Instant.ofEpochMilli(request.getVotingEndEpochMs()));
 
-        
-        
         event.setCandidateEligibility(mapEligibility(request.getCandidateEligibility()));
         event.setVoterEligibility(mapEligibility(request.getVoterEligibility()));
 
@@ -119,7 +118,6 @@ public class EventCreatorEventServiceImpl implements EventCreatorEventService {
         return toDetailsDto(saved, candidates);
     }
 
-    
     private EVENT findEventForCreator(String creatorId, String eventId) {
         EVENT event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new IllegalArgumentException("Event not found"));
@@ -130,11 +128,35 @@ public class EventCreatorEventServiceImpl implements EventCreatorEventService {
 
         return event;
     }
+
+    @Override
+    public List<PublicEventSummaryDto> listAllPublicEvents() {
+        List<EVENT> events = eventRepository.findAll();
+
+        return events.stream()
+                .map(e -> new PublicEventSummaryDto(
+                        e.getId(),
+                        e.getName(),
+                        e.getDescription(),
+                        e.getNominationStart(),
+                        e.getNominationEnd(),
+                        e.getVotingStart(),
+                        e.getVotingEnd()
+                ))
+                .toList();
+    }
+
+    @Override
+    public EventDetailsDto getPublicEventDetails(String eventId) {
+        EVENT event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("Event not found"));
+
+        List<CANDIDATE> candidates = candidateRepository.findByEventId(eventId);
+        return toDetailsDto(event, candidates);
+    }
+
     private EventDetailsDto toDetailsDto(EVENT event, List<CANDIDATE> candidates) {
-        List<CANDIDATE> candidateList = candidates;
-        if (candidateList == null) {
-            candidateList = List.of();
-        }
+        List<CANDIDATE> candidateList = (candidates != null) ? candidates : List.of();
 
         List<CandidateDto> candidateDtos = candidateList.stream()
                 .map(c -> new CandidateDto(
@@ -162,5 +184,4 @@ public class EventCreatorEventServiceImpl implements EventCreatorEventService {
                 candidateDtos
         );
     }
-
 }
