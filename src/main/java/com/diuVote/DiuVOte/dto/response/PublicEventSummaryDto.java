@@ -1,13 +1,14 @@
 package com.diuVote.DiuVOte.dto.response;
 
-import java.time.Instant;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.Instant;
+
 @Data
 @AllArgsConstructor
-public class EventSummaryDto {
+public class PublicEventSummaryDto {
     private String id;
     private String name;
     private String description;
